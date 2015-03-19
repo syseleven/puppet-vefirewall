@@ -1,0 +1,4 @@
+# Sets installation options for package iptables-persistent on Ubuntu VEs since
+# its default settings cause the installation to fail. Used by package.pp.
+iptables-persistent	iptables-persistent/autosave_v6	boolean	false
+iptables-persistent	iptables-persistent/autosave_v4	boolean	false

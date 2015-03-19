@@ -1,0 +1,95 @@
+## HEAD IS APPENDED VIA concat
+
+if [ $# -gt 0 ] && [ -z $IPTABLES ]; then
+  eerror "Unable to set iptables"
+  exit 1
+fi
+IPTABLES_SAVE=$IPTABLES-save
+IPTABLES_RESTORE=$IPTABLES-restore
+
+PATH=/sbin/:/usr/bin/:/usr/bin/:$PATH
+save_file=/var/cache/$IPTABLES-rules.save
+
+extra_commands="reset_rules"
+
+reset_rules() {
+    einfo "Clearing rules"
+
+    $IPTABLES -F INPUT
+    $IPTABLES -F OUTPUT
+    $IPTABLES -F FORWARD
+
+    $IPTABLES -P INPUT ACCEPT
+    $IPTABLES -P OUTPUT ACCEPT
+    $IPTABLES -P FORWARD ACCEPT
+
+    $IPTABLES -F
+    $IPTABLES -X
+
+    # no nat support on ipv6
+    if [ "$IPTABLES" = "iptables" ]; then  
+      $IPTABLES -t nat -F
+      $IPTABLES -t nat -X
+    fi
+
+    $IPTABLES -t mangle -F
+    $IPTABLES -t mangle -X
+}
+
+depend() {
+    need net
+    use logger
+}
+
+
+change_conntrack_module_by_kernel() {
+  # dirty shell version, not POSIX compliant :-(
+  kernel_version=$(uname -r |awk -F"." '{print $1}' | cut -d- -f 1)
+  minor_revision=$(uname -r |awk -F"." '{print $3}' | cut -d- -f 1)
+
+  # Kernels <= 2.6.18
+	if [ $kernel_version -eq 2 -a $minor_revision -lt 19 ]; then
+                sed -i 's/conntrack --ctstate/state --state/' "$save_file"
+  else
+  # Kernels > 2.6.18
+                sed -i 's/state --state/conntrack --ctstate/' "$save_file"
+  fi
+}
+
+
+start() {
+  if [[ ! -f "$save_file" ]]; then
+    eerror "'$save_file' does not exist, run really_run_puppet_agent -f to apply rules!"
+    exit 1
+  fi
+  
+  save_file_len=$(wc -l < "$save_file")
+  if ((save_file_len == no_rules)); then
+    eerror "'$save_file'  has no rules (except default rules), run really_run_puppet -f to apply rules!"
+    exit 1
+  fi
+
+  if [ "${RC_CMD}" = "restart" ]; then
+    ewarn 'Restarting the firewall will apply the SAME rules that are running now. If you need to apply new rules or purge rules, run puppet'
+  fi
+
+  ebegin "Starting firewall"
+  change_conntrack_module_by_kernel
+  einfo "Reading rules from $save_file"
+  einfo "If you want to apply the actual current rules, run really_run_puppet_agent -f!"
+  $IPTABLES_RESTORE < "$save_file"
+  eend $?
+}
+
+stop() {
+  if [ "${RC_CMD}" = "restart" ]; then
+    ewarn 'Restarting the firewall will apply the SAME rules that are running now. If you need to apply new rules or purge rules, run puppet'
+  fi
+
+  ebegin "Stopping firewall"
+  einfo "Saving rules to '$save_file'"
+  $IPTABLES_SAVE > "$save_file"
+
+  reset_rules
+  eend $?
+}

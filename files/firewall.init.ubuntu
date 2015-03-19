@@ -1,0 +1,154 @@
+## HEAD IS APPENDED VIA concat
+
+. /lib/lsb/init-functions
+
+rc=0
+
+if [ -z $IPTABLES ]; then
+  echo "Unable to set iptables"
+  exit 1
+fi
+IPTABLES_RESTORE=$IPTABLES-restore
+IPTABLES_SAVE=$IPTABLES-save
+PATH=/sbin/:/usr/bin/:/usr/bin/:$PATH
+save_file=/var/cache/$IPTABLES-rules.save
+
+
+reset_rules() {
+    log_action_begin_msg "Clearing rules"
+
+    $IPTABLES -F INPUT
+    $IPTABLES -F OUTPUT
+    $IPTABLES -F FORWARD
+
+    $IPTABLES -P INPUT ACCEPT
+    $IPTABLES -P OUTPUT ACCEPT
+    $IPTABLES -P FORWARD ACCEPT
+
+    $IPTABLES -F
+    $IPTABLES -X
+
+    if [ "$IPTABLES" = "iptables" ]; then
+      $IPTABLES -t nat -F
+      $IPTABLES -t nat -X
+    fi
+
+    $IPTABLES -t mangle -F
+    $IPTABLES -t mangle -X
+}
+
+change_conntrack_module_by_kernel() {
+  # dirty shell version, not POSIX compliant :-(
+  kernel_version=$(uname -r |awk -F"." '{print $1}' | cut -d- -f 1)
+  minor_revision=$(uname -r |awk -F"." '{print $3}' | cut -d- -f 1)
+
+  # Kernels <= 2.6.18
+	if [ $kernel_version -eq 2 -a $minor_revision -lt 19 ]; then
+                sed -i 's/conntrack --ctstate/state --state/' "$save_file"
+  else
+  # Kernels > 2.6.18
+                sed -i 's/state --state/conntrack --ctstate/' "$save_file"
+  fi
+
+}
+
+status() {
+  if [ -f $run_file ]; then
+    log_success_msg "firewall is running"
+    exit 0
+  else
+    log_failure_msg "firewall is not running"
+    exit 1
+  fi
+  }
+
+
+start() {
+  if [ ! -f "$save_file" ]; then
+    log_failure_msg "'$save_file' does not exist, run really_run_puppet_agent -f to apply rules!"
+    exit 1
+  fi
+  
+  save_file_len=$(wc -l < "$save_file")
+  if [ $save_file_len -eq $no_rules ]; then
+    log_failure_msg "'$save_file'  has no rules (except default rules), run really_run_puppet -f to apply rules!"
+    exit 1
+  fi
+
+  if [ "${RC_CMD}" = "restart" ]; then
+    log_warning_msg 'Restarting the firewall will apply the SAME rules that are running now. If you need to apply new rules or purge rules, run puppet'
+  fi
+
+  log_action_begin_msg "Starting firewall"
+
+  # pp-1222: Ubuntu (12.04 LTS, at any rate) behaves like Gentoo with a Kernel
+  # version < 2.6.19, hence we don't need to perform this substitution here.
+
+  #change_conntrack_module_by_kernel
+
+  log_action_cont_msg "Reading rules from $save_file"
+  log_action_cont_msg "If you want to apply the actual current rules, run really_run_puppet_agent -f!"
+  $IPTABLES_RESTORE < "$save_file"
+
+  # Record running state, or make sure there is none on failure.
+
+  if [ $? -eq 0 ]; then
+    echo 1 > $run_file
+  else
+    rm -f $run_file
+  fi
+
+  log_action_end_msg $?
+}
+
+stop() {
+  if [ ! -f $run_file ]; then
+    log_failure_msg "firewall not running (create $run_file if that's not the case)"
+    exit 1
+  fi
+
+  if [ "${RC_CMD}" = "restart" ]; then
+    log_warning_msg 'Restarting the firewall will apply the SAME rules that are running now. If you need to apply new rules or purge rules, run puppet'
+  fi
+
+  log_action_begin_msg "Stopping firewall"
+  log_action_cont_msg "Saving rules to '$save_file'"
+  $IPTABLES_SAVE > "$save_file"
+
+  reset_rules
+
+  # Remove running state, or make sure it remains in existence on failure.
+
+  if [ $? -eq 0 ]; then
+    rm -f $run_file
+  else
+    echo 1 > $run_file
+  fi
+
+  log_action_end_msg $?
+}
+
+case "$1" in
+start|restart|reload|force-reload)
+  start
+	;;
+restart)
+  RC_CMD="restart"
+  start
+	;;
+stop)
+  stop
+	;;
+status)
+  status
+  ;;
+reset_rules)
+  reset_rules
+  ;;
+*)
+    log_warning_msg "Usage: $0 {start|stop|status|restart|reset_rules}" >&2
+    exit 1
+    ;;
+esac
+
+exit $rc

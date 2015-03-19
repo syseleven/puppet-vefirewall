@@ -1,0 +1,16 @@
+#!/sbin/runscript
+# Copyright 1999-2014 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# 
+# 2014, s.andres@syseleven.de
+# 
+# https://youtrack.syseleven.de/issue/pp-873
+#
+# The actual rules come from puppet (vefirewall module), this script only stores and restores the rules
+#
+# Note: As of https://youtrack.syseleven.de/issue/pp-1222 both this file and
+# firewall.init.ubuntu need to be modified for changes to the vefirewall init
+# script. 
+
+IPTABLES=ip6tables
+no_rules=8

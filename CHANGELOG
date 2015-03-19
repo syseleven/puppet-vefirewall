@@ -1,0 +1,5 @@
+
+1.1.0 (8cea6e7)
+  - add support for centos6 and centos7 #pp-1823
+1.0.0 (8cc6404e6)
+  - remove gentoo::sync, cause it's already in ve_base #pp-1701

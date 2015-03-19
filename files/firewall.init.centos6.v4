@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# iptables	Start iptables firewall
+#
+# chkconfig: 2345 08 92
+# description:	Starts, stops and saves iptables firewall
+#
+# config: /etc/sysconfig/iptables
+# config: /etc/sysconfig/iptables-config
+#
+### BEGIN INIT INFO
+# Provides: firewall
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop iptables firewall
+# Description: Start, stop and save iptables firewall
+### END INIT INFO
+
+## THIS FILE IS MANAGED BY sys11-puppet
+
+# Source function library.
+. /etc/init.d/functions
+
+IPTABLES=iptables
+## keep this here, to be able to source IPTABLES_CONFIG in this concat-file!
+IPTABLES_CONFIG=/etc/sysconfig/${IPTABLES}-config
+
+# Default firewall configuration:
+IPTABLES_MODULES=""
+IPTABLES_MODULES_UNLOAD="yes"
+IPTABLES_SAVE_ON_STOP="no"
+IPTABLES_SAVE_ON_RESTART="no"
+IPTABLES_SAVE_COUNTER="no"
+IPTABLES_STATUS_NUMERIC="yes"
+IPTABLES_STATUS_VERBOSE="no"
+IPTABLES_STATUS_LINENUMBERS="yes"
+IPTABLES_SYSCTL_LOAD_LIST=""
+
+# Load firewall configuration.
+## This needs to be here because of renaming vars from IP6TABLES_ to IPTABLES_
+[ -f "$IPTABLES_CONFIG" ] && . "$IPTABLES_CONFIG"
