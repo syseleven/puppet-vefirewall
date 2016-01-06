@@ -1,4 +1,5 @@
-
+1.1.1
+  - Update documentation to include params #pp-2142
 1.1.0 (8cea6e7)
   - add support for centos6 and centos7 #pp-1823
 1.0.0 (8cc6404e6)
