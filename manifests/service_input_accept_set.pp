@@ -15,7 +15,7 @@ define vefirewall::service_input_accept_set(
   }
 
   if versioncmp($::kernelversion, '2.6.19') < 0 {
-    firewall { "100 INPUT $host $proto $port accept deprecated kernel $provider $version":
+    firewall { "100 INPUT ${host} ${proto} ${port} accept deprecated kernel ${provider} ${version}":
       provider    => $provider,
       chain       => 'INPUT',
       action      => 'accept',
@@ -25,7 +25,7 @@ define vefirewall::service_input_accept_set(
       dport       => $port,
     }
   } else {
-    firewall { "100 INPUT $host $proto $port accept $provider $version":
+    firewall { "100 INPUT ${host} ${proto} ${port} accept ${provider} ${version}":
       provider    => $provider,
       chain       => 'INPUT',
       action      => 'accept',

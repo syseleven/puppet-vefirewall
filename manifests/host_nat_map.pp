@@ -10,7 +10,7 @@ define vefirewall::host_nat_map() {
     $ip_parts = split($::ipaddress_internal, '[.]')
     $int_net = join([values_at($ip_parts, 0), values_at($ip_parts, 1), values_at($ip_parts, 2), '0/24'], '.')
 
-    firewall { "200 nat postrouting from $vpn_net to $int_net snat to $ipaddress_internal $vefirewall::params::version":
+    firewall { "200 nat postrouting from ${vpn_net} to ${int_net} snat to ${ipaddress_internal} ${vefirewall::params::version}":
       table       => 'nat',
       chain       => 'POSTROUTING',
       proto       => 'all',

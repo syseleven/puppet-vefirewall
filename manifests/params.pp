@@ -13,18 +13,18 @@ class vefirewall::params () {
     'gentoo': {
       $iptables_package = 'net-firewall/iptables'
       $gentoo_useflags = ''
-      $init_script = "puppet:///modules/$module_name/firewall.init.gentoo"
+      $init_script = "puppet:///modules/${module_name}/firewall.init.gentoo"
     }
     'ubuntu': {
       $iptables_package = 'iptables'
-      $init_script = "puppet:///modules/$module_name/firewall.init.ubuntu"
+      $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
     'debian': {
       if $::operatingsystemmajrelease < 7 {
         fail('Your debian must be at least 7.0!')
       }
       $iptables_package = 'iptables'
-      $init_script = "puppet:///modules/$module_name/firewall.init.ubuntu"
+      $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
     'centos': {
       if $::operatingsystemmajrelease < 6 {
@@ -32,10 +32,10 @@ class vefirewall::params () {
       }
       $iptables_package = 'iptables'
       $ip6tables_package = 'iptables-ipv6'
-      $init_script = "puppet:///modules/$module_name/firewall.init.centos6"
+      $init_script = "puppet:///modules/${module_name}/firewall.init.centos6"
     }
     default: {
-      fail("Unknown OS: $::operatingsystem")
+      fail("Unknown OS: ${::operatingsystem}")
     }
   }
 }

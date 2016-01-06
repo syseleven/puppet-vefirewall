@@ -168,10 +168,10 @@ class vefirewall(
     } else {
       $migration_cmd='; iptables -t nat -F; iptables -t mangle -F'
     }
-    notify { "iptables -F $migration_cmd": }
+    notify { "iptables -F ${migration_cmd}": }
     # flushing all tables
     exec { 'vefirewall::flush_iptables':
-      command => "iptables -F $migration_cmd",
+      command => "iptables -F ${migration_cmd}",
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       before  => Class['vefirewall::firewall_pre'],
       require => Exec['vefirewall::prepare_migration'],

@@ -19,7 +19,7 @@ class vefirewall::package () {
 
     file { '/var/cache/apt/iptables-persistent.preseed':
       mode   => '0600',
-      source => "puppet:///modules/$module_name/iptables-persistent.preseed"
+      source => "puppet:///modules/${module_name}/iptables-persistent.preseed"
       }
 
     package { 'iptables-persistent':

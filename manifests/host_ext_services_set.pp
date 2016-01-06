@@ -4,10 +4,10 @@
 #
 define vefirewall::host_ext_services_set() {
   $fw_parts = split($name, ',')
-  $provider = "${fw_parts[0]}"
-  $ip = "${fw_parts[1]}"
-  $proto = "${fw_parts[2]}"
-  $port = "${fw_parts[3]}"
+  $provider = $fw_parts[0]
+  $ip = $fw_parts[1]
+  $proto = $fw_parts[2]
+  $port = $fw_parts[3]
 
   # ip_real (needs to be array)
   $ip_real = $ip ? {

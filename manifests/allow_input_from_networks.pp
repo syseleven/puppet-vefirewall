@@ -8,8 +8,8 @@
 #
 define vefirewall::allow_input_from_networks() {
   $fw_parts = split($name, ',')
-  $provider = "${fw_parts[0]}"
-  $network = "${fw_parts[1]}"
+  $provider = $fw_parts[0]
+  $network = $fw_parts[1]
 
   if $provider == 'ip6tables' {
     $version = $vefirewall::params::version6
@@ -20,7 +20,7 @@ define vefirewall::allow_input_from_networks() {
   # network might be empty due to hiera-fact being empty
   # avoid rasing puppet fatal
   if $network {
-    firewall { "130 input from $network accept $provider $version":
+    firewall { "130 input from ${network} accept ${provider} ${version}":
       provider => $provider,
       chain    => 'INPUT',
       proto    => 'all',
