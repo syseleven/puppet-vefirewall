@@ -34,6 +34,11 @@ class vefirewall::params () {
       $ip6tables_package = 'iptables-ipv6'
       $init_script = "puppet:///modules/${module_name}/firewall.init.centos6"
     }
+    'OracleLinux': {
+      $iptables_package = 'iptables'
+      $ip6tables_package = 'iptables-ipv6'
+      $init_script = "puppet:///modules/${module_name}/firewall.init.centos6"
+    }
     default: {
       fail("Unknown OS: ${::operatingsystem}")
     }
