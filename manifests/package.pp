@@ -16,6 +16,14 @@ class vefirewall::package () {
     # upon installation (which is its default setting). Otherwise package
     # installation will fail. Package options are recorded in
     # files/iptables-persistent.preseed.
+    case $::operatingsystemrelase {
+      '16.04': {
+        $service_name = 'netfilter-persistent'
+      }
+      default: {
+        $service_name = 'iptables-persistent'
+      }
+    }
 
     file { '/var/cache/apt/iptables-persistent.preseed':
       mode   => '0600',
@@ -31,8 +39,9 @@ class vefirewall::package () {
 
     # We need to disable iptables-persistent, since this conflicts with our
     # /etc/init.d/firewall
-    service { 'iptables-persistent':
+    service { $service_name:
       ensure    => stopped,
+      alias     => 'iptables-persistent',
       enable    => false,
       hasstatus => false,
       require   => Package['iptables-persistent'],
