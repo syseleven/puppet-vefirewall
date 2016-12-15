@@ -4,14 +4,7 @@
 #
 class vefirewall::package () {
 
-  if $::operatingsystem == 'gentoo' {
-
-  if $vefirewall::iptables_useflags {
-    gentoo::useflag { $vefirewall::package:
-    flags => $vefirewall::iptables_useflags,
-      }
-    }
-  } elsif $::osfamily == 'debian' {
+  if $::osfamily == 'debian' {
     # Preconfigure iptables-save package _not_ to save existing iptables rules
     # upon installation (which is its default setting). Otherwise package
     # installation will fail. Package options are recorded in
