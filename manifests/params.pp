@@ -12,6 +12,7 @@ class vefirewall::params () {
   case $::operatingsystem {
     'gentoo': {
       $iptables_package = 'net-firewall/iptables'
+      $gentoo_useflags = ''
       $init_script = "puppet:///modules/${module_name}/firewall.init.gentoo"
     }
     'ubuntu': {

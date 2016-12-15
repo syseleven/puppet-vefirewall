@@ -46,6 +46,8 @@ You can use both modules separately, but you definitely should **not** (see Know
       Set this to a network (e.g. '10.21.0.0/24') so that requests from that network will be NATed to the internal IP
     $allow_input_from_networks = undef,
       Set this to a list of networks (e.g. '10.21.0.0/24') to do iptables -I INPUT -s $network -j ACCEPT
+    $iptables_useflags = $vefirewall::params::useflags,
+      Set this to any extra USE flags you might want to supply to the iptables ebuild (caveat: only works for gentoo nodes)
     $iptables_package = $vefirewall::params::package,
       iptables package to install
     $accept_input_on_internal_network = true,
