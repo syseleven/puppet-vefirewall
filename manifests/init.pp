@@ -19,8 +19,6 @@
 #     Set this to a network (e.g. '10.21.0.0/24') so that requests from that network will be NATed to the internal IP
 #   $allow_input_from_networks = undef,
 #     Set this to a list of networks (e.g. '10.21.0.0/24') to do iptables -I INPUT -s $network -j ACCEPT
-#   $iptables_useflags = $vefirewall::params::useflags
-#     Set this to any extra USE flags you might want to supply to the iptables ebuild (caveat: only works for gentoo nodes)
 #   $iptables_package = $vefirewall::params::package,
 #     iptables package to install
 #   $accept_input_on_internal_network = true,
@@ -29,7 +27,7 @@
 #     Set this to false to not accept 10.0.0.0/8 for OUTPUT chain
 #   $output_default_policy = 'accept',
 #     This set the default output_police to given value
-#   $icmp_related_list = [0, 3, 11, 12, 14, 18],
+#   $icmp_related_list = ['0', '3', '11', '12', '14', '18'],
 #     accepted returns for icmptypes from outgoing requests
 #   $output_icmp_list = ['time-exceeded', '3/3', '3/4', '3/9', '3/10', '3/13', '3', '8']
 #     accepted output icmp list
@@ -68,7 +66,6 @@ class vefirewall(
   $vlan2_additional_internal_nets = [],
   $host_nat_map = undef,
   $allow_input_from_networks = undef,
-  $iptables_useflags = $vefirewall::params::useflags,
   $iptables_package = $vefirewall::params::package,
   $accept_input_on_internal_network = true,
   $accept_output_on_internal_network = true,
@@ -76,14 +73,14 @@ class vefirewall(
   $accept_tcp_60000_60100 = true,
   $output_default_policy = 'accept',
   $forward_default_policy = 'accept',
-  $icmp_related_list = [0, 3, 11, 12, 14, 18],
+  $icmp_related_list = ['0', '3', '11', '12', '14', '18'],
   $output_icmp_list = ['time-exceeded', '3/3', '3/4', '3/9', '3/10', '3/13', '3', '8'],
   $force_migration = false,
   $disable_migration_nat = false,
   $disable_migration_mangle = false,
 ) inherits vefirewall::params {
 
-  if $::osfamily == 'redhat' and $::operatingsystemmajrelease > 6 {
+  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease > 6 {
     ensure_resource('exec', 'systemctl daemon-reload', {
       path        => '/bin:/usr/bin:/sbin:/usr/sbin',
       refreshonly => true,

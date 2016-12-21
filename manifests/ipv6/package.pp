@@ -10,7 +10,7 @@ class vefirewall::ipv6::package () {
       alias  => 'ip6tables',
     }
 
-    if $::osfamily == 'redhat' {
+    if $::osfamily == 'RedHat' {
       service { 'ip6tables':
         ensure    => stopped,
         enable    => false,

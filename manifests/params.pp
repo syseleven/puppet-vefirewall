@@ -10,23 +10,22 @@ class vefirewall::params () {
   $version6 = '1.0'
 
   case $::operatingsystem {
-    'gentoo': {
+    'Gentoo': {
       $iptables_package = 'net-firewall/iptables'
-      $gentoo_useflags = ''
       $init_script = "puppet:///modules/${module_name}/firewall.init.gentoo"
     }
-    'ubuntu': {
+    'Ubuntu': {
       $iptables_package = 'iptables'
       $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
-    'debian': {
+    'Debian': {
       if $::operatingsystemmajrelease < 7 {
         fail('Your debian must be at least 7.0!')
       }
       $iptables_package = 'iptables'
       $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
-    'centos': {
+    'CentOS': {
       if $::operatingsystemmajrelease < 6 {
         fail('Your centos must be at least 6!')
       }

@@ -36,7 +36,7 @@ class vefirewall::ipv6(
 
   require vefirewall::ipv6::package
 
-  if $::osfamily == 'redhat' and $::operatingsystemmajrelease > 6 {
+  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease > 6 {
     ensure_resource('exec', 'systemctl daemon-reload', {
       path        => '/bin:/usr/bin:/sbin:/usr/sbin',
       refreshonly => true,
