@@ -1,3 +1,5 @@
+1.4.1
+ - vefirewall, Add future parser changes for VLAN2 #pp-3468
 1.4
   - vefirewall, prepare future parser #pp-3410
 1.3
