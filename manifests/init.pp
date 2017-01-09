@@ -80,7 +80,7 @@ class vefirewall(
   $disable_migration_mangle = false,
 ) inherits vefirewall::params {
 
-  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease > 6 {
+  if $::osfamily == 'RedHat' and versioncmp($::operatingsystemmajrelease, '6') > 0 {
     ensure_resource('exec', 'systemctl daemon-reload', {
       path        => '/bin:/usr/bin:/sbin:/usr/sbin',
       refreshonly => true,

@@ -19,14 +19,14 @@ class vefirewall::params () {
       $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
     'Debian': {
-      if $::operatingsystemmajrelease < 7 {
+      if versioncmp($::operatingsystemmajrelease, '7') < 0 {
         fail('Your debian must be at least 7.0!')
       }
       $iptables_package = 'iptables'
       $init_script = "puppet:///modules/${module_name}/firewall.init.ubuntu"
     }
     'CentOS': {
-      if $::operatingsystemmajrelease < 6 {
+      if versioncmp($::operatingsystemmajrelease, '6') < 0 {
         fail('Your centos must be at least 6!')
       }
       $iptables_package = 'iptables'
