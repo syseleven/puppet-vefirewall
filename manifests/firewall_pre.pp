@@ -88,31 +88,7 @@ class vefirewall::firewall_pre() {
     action => 'accept',
   }
 
-  # define vefirewall::firewall_input_icmp_related_established_X_accept
-  #
-  # Paramters:
-  #   none
-  #
-  define firewall_input_icmp_related_established_X_accept() {
-    if versioncmp($::kernelversion, '2.6.19') < 0 {
-      firewall { "010 input icmp relayed established ${name} accept depcrecated kernel iptables ${vefirewall::params::version}":
-          chain  => 'INPUT',
-          proto  => 'icmp',
-          state  => ['RELATED','ESTABLISHED'],
-          icmp   => $name,
-          action => 'accept',
-        }
-    } else {
-      firewall { "010 input icmp relayed established ${name} accept iptables ${vefirewall::params::version}":
-          chain   => 'INPUT',
-          proto   => 'icmp',
-          ctstate => ['RELATED','ESTABLISHED'],
-          icmp    => $name,
-          action  => 'accept',
-        }
-    }
-  }
-  firewall_input_icmp_related_established_X_accept { $vefirewall::icmp_related_list: }
+  vefirewall::input_icmp_related_established_accept { $vefirewall::icmp_related_list: }
 
   firewall { "020 input tcp drop sync rst ack sync iptables ${vefirewall::params::version}":
     chain     => 'INPUT',
@@ -197,21 +173,7 @@ class vefirewall::firewall_pre() {
     action   => 'accept',
   }
 
-  # define firewall_output_icmp_X_accept
-  #
-  # Parameters:
-  #   none
-  #
-  define firewall_output_icmp_X_accept() {
-    firewall { "070 output icmp ${name} accept iptables ${vefirewall::params::version}":
-      chain  => 'OUTPUT',
-      proto  => 'icmp',
-      icmp   => $name,
-      action => 'accept',
-    }
-  }
-
-  firewall_output_icmp_X_accept { $vefirewall::output_icmp_list: }
+  vefirewall::output_icmp_accept { $vefirewall::output_icmp_list: }
 
   if versioncmp($::kernelversion, '2.6.19') < 0 {
     firewall { "030 output all related established accept depcrecated kernel iptables ${vefirewall::params::version}":

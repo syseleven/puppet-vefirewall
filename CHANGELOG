@@ -1,3 +1,5 @@
+1.5
+  - Do not use defined type inside class #pp-3568
 1.4.2
   - Prepare future parser #pp-3491
 1.4.1
