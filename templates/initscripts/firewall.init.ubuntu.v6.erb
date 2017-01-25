@@ -8,7 +8,7 @@
 # script. 
 
 ### BEGIN INIT INFO
-# Provides:          firewall
+# Provides:          firewall6
 # Required-Start:    mountkernfs $local_fs
 # Required-Stop:     $local_fs
 # Default-Start:     2 3 4 5
@@ -18,6 +18,7 @@
 # Short-Description: Set up iptables rules
 ### END INIT INFO
 
-IPTABLES=iptables
-no_rules=23
-run_file=/run/firewall.running           # Records running state
+IPTABLES=ip6tables
+no_rules=8
+run_file=/run/firewall6.running           # Records running state
+<%= scope.function_template(["vefirewall/initscripts/firewall.init.ubuntu.erb"]) %>

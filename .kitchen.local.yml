@@ -1,0 +1,8 @@
+suites:
+  - name: vefirewall
+    excludes: ubuntu-16.04
+    provisioner:
+      manifest: vefirewall/site.pp
+      custom_facts:
+        sys11vlan: 2
+        

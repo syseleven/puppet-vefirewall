@@ -1,0 +1,9 @@
+classes:
+  - vefirewall
+
+vefirewall::accept_tcp_60000_60100: false
+vefirewall::accept_udp_high_ports: false
+vefirewall::host_trusted_services:
+  - '127.0.0.1,tcp,22'
+vefirewall::host_ext_services:
+  - '0.0.0.0/0,tcp,22'

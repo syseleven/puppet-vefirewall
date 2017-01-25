@@ -12,5 +12,7 @@
 # firewall.init.ubuntu need to be modified for changes to the vefirewall init
 # script. 
 
-IPTABLES=ip6tables
-no_rules=8
+IPTABLES=iptables
+no_rules=23
+
+<%= scope.function_template(["vefirewall/initscripts/firewall.init.gentoo.erb"]) %>

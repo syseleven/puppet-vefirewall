@@ -92,39 +92,18 @@ class vefirewall(
     }
   } else {
     $notify_init_script = Exec['iptables-save-vefirewall']
-    # nothing to do here. BUT service fireall requires this anchor!!!
+    # nothing to do here. BUT service firewall requires this anchor!!!
     anchor { 'init-reload':
     }
   }
-  #
-  # HACK
-  # This is because of too much bash magic in $vefirewall::params::init_script
-  # it can not be used as template.
-  # But. We need almost the same code twice. Once for iptables and once for iptables6.
-  # It is not enough to try to detect the call path in this script, because the helper
-  # comments for upstart have to differ between v4 and v6 too.
-  #
-  # But... I do not want to have the code logic duplicated.
-  #
-  concat { '/etc/init.d/firewall':
-    ensure => present,
-    mode   => '0544',
-    notify => $notify_init_script,
-    before => Service['firewall'],
-  }
 
-  concat::fragment { 'headv4':
-    target => '/etc/init.d/firewall',
-    source => "${vefirewall::params::init_script}.v4",
-    order  => '01',
+  file { '/etc/init.d/firewall':
+    ensure  => present,
+    mode    => '0544',
+    notify  => $notify_init_script,
+    content => template("vefirewall/initscripts/${vefirewall::params::init_script}.v4.erb"),
+    before  => Service['firewall'],
   }
-
-  concat::fragment { 'scriptv4':
-    target => '/etc/init.d/firewall',
-    source => $vefirewall::params::init_script,
-    order  => '02',
-  }
-  # /HACK
 
   file {
     '/etc/init.d/firewall3':
@@ -189,7 +168,7 @@ class vefirewall(
 
   Firewall {
     before  => Class['vefirewall::firewall_post'],
-    require => [Class['vefirewall::firewall_pre'], Concat['/etc/init.d/firewall']],
+    require => [Class['vefirewall::firewall_pre'], File['/etc/init.d/firewall']],
     notify  => Exec['iptables-save-vefirewall'],
   }
 

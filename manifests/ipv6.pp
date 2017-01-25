@@ -53,35 +53,13 @@ class vefirewall::ipv6(
     }
   }
 
-  #
-  # HACK
-  # This is because of too much bash magic in $vefirewall::params::init_script
-  # it can not be used as template.
-  # But. We need almost the same code twice. Once for iptables and once for iptables6.
-  # It is not enough to try to detect the call path in this script, because the helper
-  # comments for upstart have to differ between v4 and v6 too.
-  #
-  # But... I do not want to have the code logic duplicated.
-  #
-  concat { '/etc/init.d/firewall6':
-    ensure => present,
-    mode   => '0544',
-    notify => $notify_init_script,
-    before => Service['firewall6'],
+  file { '/etc/init.d/firewall6':
+    ensure  => present,
+    mode    => '0544',
+    notify  => $notify_init_script,
+    content => template("vefirewall/initscripts/${vefirewall::params::init_script}.v6.erb"),
+    before  => Service['firewall6'],
   }
-
-  concat::fragment { 'headv6':
-    target => '/etc/init.d/firewall6',
-    source => "${vefirewall::params::init_script}.v6",
-    order  => '01',
-  }
-
-  concat::fragment { 'scriptv6':
-    target => '/etc/init.d/firewall6',
-    source => $vefirewall::params::init_script,
-    order  => '02',
-  }
-  # /HACK
 
   exec { 'ip6tables-save-vefirewall':
     command     => 'ip6tables-save > /var/cache/ip6tables-rules.save',
@@ -120,7 +98,7 @@ class vefirewall::ipv6(
 
   Firewall {
     before  => Class['vefirewall::ipv6::firewall_post'],
-    require => [Class['vefirewall::ipv6::firewall_pre'], Concat['/etc/init.d/firewall6']],
+    require => [Class['vefirewall::ipv6::firewall_pre'], File['/etc/init.d/firewall6']],
     notify  => Exec['ip6tables-save-vefirewall'],
   }
 

@@ -41,3 +41,4 @@ IPTABLES_SYSCTL_LOAD_LIST=""
 # Load firewall configuration.
 ## This needs to be here because of renaming vars from IP6TABLES_ to IPTABLES_
 [ -f "$IPTABLES_CONFIG" ] && . "$IPTABLES_CONFIG"
+<%= scope.function_template(["vefirewall/initscripts/firewall.init.centos6.erb"]) %>
