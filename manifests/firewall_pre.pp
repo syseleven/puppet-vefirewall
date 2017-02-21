@@ -23,7 +23,7 @@ class vefirewall::firewall_pre() {
     $state = 'ctstate'
   }
 
-  if ($::sys11vlan + 0) == 2 {
+  if $::ipaddress_internal and $::ipaddress_internal =~ /^10\.0\./ {
     # vlan2 needs to have this NAT rule for the VE to have internet if there is an external IP
     # -t nat -A POSTROUTING -o venet0 ! -d 10.0.0.0/8 -j SNAT --to $EXTIP
 
