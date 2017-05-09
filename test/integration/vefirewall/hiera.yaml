@@ -1,7 +1,10 @@
-:backends:
-  - yaml
-:yaml:
-  :datadir: /var/lib/hiera
-:hierarchy:
-  - global
-  - module
+---
+version: 5
+defaults:
+  data_hash: yaml_data
+  datadir: /tmp/kitchen/hiera/
+hierarchy:
+  - name: "hierarchy"
+    paths:
+      - global.yaml
+      - module.yaml
